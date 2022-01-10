@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  Keyboard,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -10,34 +12,86 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-export default function QuizScreen({navigation}) {
+export default function QuizScreen({ navigation }) {
   const [scoreTableUsers, setScoreTableUsers] = useState([
-    { username: "mithat", score: 2400 },
-    { username: "talha", score: 2100 },
-    { username: "taha", score: 1900 },
-    { username: "güldemet", score: 1400 },
-    { username: "isa", score: 1000 },
+    { username: "rebellion", score: 2400 },
+    { username: "ahsen", score: 2100 },
+    { username: "hasan", score: 1900 },
+    { username: "mithat", score: 1000 },
+    { username: "hüseyin", score: 1400 },
   ]);
+
+  const [username, setUsername] = useState("");
+  const [valid, setValid] = useState(false);
+  const [focus, setFocus] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+    const checkUsernameValid = (username) => {
+      if (username.length >= 5) {
+        for (let i = 0; i < scoreTableUsers.length; i++) {
+          if (scoreTableUsers[i].username.toLowerCase() === username.toLowerCase()) {
+            setValid(false);
+            break;
+          } else {
+            setValid(true);
+          }
+        }
+      } else {
+        setValid(false);
+      }
+    };
+
+
+  useEffect(() => {
+    checkUsernameValid(username)
+  }, [username]);
+
+  const handleButtonPressed = () => {
+    if (valid) {
+      navigation.navigate("Difficulty", { username: username });
+      setFocus(false);
+      setUsername("");
+      setValid("true");
+    } else {
+      if(username.length<5){
+        alert("Username must has at least 5 characters.");
+      return
+      }
+      alert("Username is already taken.");
+    }
+  };
 
   return (
     <SafeAreaView style={styles.mainContainer}>
       <View style={styles.header}>
         <Icon name="emoji-flags" size={70} color={"white"} />
-        <Text style={styles.headerText}>Enjoy Trivia Quiz</Text>
+        <Text style={styles.headerText}>Trivia Quiz</Text>
       </View>
       <View style={styles.bottomField}>
         <View style={{ height: 400, width: "100%" }}>
-          <Text
-            style={styles.scoreTableMainContainer}
-          >
-            SCORE TABLE
-          </Text>
+          <Text style={styles.scoreTableMainContainer}>SCORE TABLE</Text>
           <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => {
+                  setRefreshing(true);
+                  setTimeout(() => {
+                    setRefreshing(false);
+                  }, 1000);
+                }}
+              />
+            }
             style={styles.scoreTableContainer}
           >
             {scoreTableUsers.map((user) => (
               <View
-                style={styles.scoreTableUser}
+                style={{
+                  ...styles.scoreTableUser,
+                  borderWidth: scoreTableUsers.indexOf(user) === 0 ? 2 : 0,
+                  backgroundColor:
+                    scoreTableUsers.indexOf(user) === 0 ? "#ffde69" : "#e6e6e6",
+                }}
               >
                 <Text style={{ fontSize: 24 }}>
                   {scoreTableUsers.indexOf(user) + 1}
@@ -49,18 +103,44 @@ export default function QuizScreen({navigation}) {
             ))}
           </ScrollView>
         </View>
-        <View
-          style={styles.inputButtonView}
-        >
+        <View style={styles.inputButtonView}>
           <TextInput
+            value={username}
+            onFocus={() => setFocus(true)}
+            onBlur={() => setFocus(false)}
             style={styles.usernameInput}
             placeholder="USERNAME"
+            onChangeText={setUsername}
           ></TextInput>
-          <TouchableOpacity onPress={()=>navigation.navigate('Difficulty')} style={styles.goButton}>
+          <TouchableOpacity
+            onPress={handleButtonPressed}
+            style={styles.goButton}
+          >
             <Icon size={40} color={"white"} name="double-arrow" />
           </TouchableOpacity>
         </View>
       </View>
+
+      {focus ? (
+        <>
+          <ScrollView style={styles.brightnessView}></ScrollView>
+          <View style={styles.usernameView}>
+            <Text
+              style={{
+                color: "black",
+                fontWeight: "bold",
+                fontSize: 30,
+                backgroundColor: valid ? "#87db76" : "#ff7e75",
+                paddingVertical: 2,
+              }}
+            >
+              {username}
+            </Text>
+          </View>
+        </>
+      ) : (
+        <></>
+      )}
     </SafeAreaView>
   );
 }
@@ -105,29 +185,31 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     paddingHorizontal: 60,
     borderRadius: 10,
+    width: "44%",
     borderWidth: 1,
-    borderColor:"#3536bd",
+    borderColor: "#3536bd",
     fontWeight: "bold",
     flexDirection: "row",
     alignItems: "center",
   },
-  usernameInput:{
+  usernameInput: {
     borderColor: "black",
     borderWidth: 1,
     paddingVertical: 16,
-    paddingHorizontal: 40,
+    width: "44%",
+    paddingHorizontal: 10,
+    textAlign: "center",
     borderRadius: 10,
   },
-  inputButtonView:{
+  inputButtonView: {
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
     width: "100%",
     paddingHorizontal: 20,
   },
-  scoreTableUser:{
+  scoreTableUser: {
     height: 70,
-    backgroundColor: scoreTableUsers.indexOf(user)===0?"#ffde69":"#e6e6e6",
     width: "100%",
     marginBottom: 10,
     borderRadius: 20,
@@ -135,20 +217,41 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 40,
     alignItems: "center",
-    borderWidth:scoreTableUsers.indexOf(user)===0?2:0,
-    borderColor:"#edb900"
+    borderColor: "#edb900",
   },
-  scoreTableContainer:{
+  scoreTableContainer: {
     backgroundColor: "#f2f2f2",
     width: "100%",
     height: 200,
     padding: 10,
     borderRadius: 20,
   },
-  scoreTableMainContainer:{
+  scoreTableMainContainer: {
     fontSize: 30,
     textAlign: "center",
     padding: 10,
     fontWeight: "bold",
-  }
+  },
+  brightnessView: {
+    backgroundColor: "black",
+    width: "100%",
+    height: "100%",
+    position: "absolute",
+    top: 0,
+    opacity: 0.7,
+  },
+  usernameView: {
+    backgroundColor: "#e6e6e6",
+    width: "80%",
+    height: 50,
+    position: "absolute",
+    top: "50%",
+    opacity: 1,
+    zIndex: 10,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    borderWidth: 1,
+  },
 });
