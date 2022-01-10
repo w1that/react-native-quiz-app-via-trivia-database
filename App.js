@@ -7,9 +7,10 @@ import QuizScreen from './components/QuizScreen'
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName='Home'>
+      <Stack.Navigator screenOptions={{headerShown:false}} initialRouteName='Difficulty'>
         <Stack.Screen name="Home" options={{ title: 'My home', headerShown:false }} component={HomeScreen} />
         <Stack.Screen name="Quiz" component={QuizScreen} />
         <Stack.Screen name="Difficulty" component={DifficultyScreen} />

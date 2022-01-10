@@ -26,29 +26,18 @@ export default function QuizScreen({ navigation }) {
   const [focus, setFocus] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-    const checkUsernameValid = (username) => {
-      if (username.length >= 5) {
-        for (let i = 0; i < scoreTableUsers.length; i++) {
-          if (scoreTableUsers[i].username.toLowerCase() === username.toLowerCase()) {
-            setValid(false);
-            break;
-          } else {
-            setValid(true);
-          }
-        }
-      } else {
-        setValid(false);
-      }
-    };
-
-
+   
   useEffect(() => {
-    checkUsernameValid(username)
+    if(username.length<5){
+      setValid(false)
+    }else{
+      setValid(true)
+    }
   }, [username]);
 
   const handleButtonPressed = () => {
     if (valid) {
-      navigation.navigate("Difficulty", { username: username });
+      navigation.push("Difficulty", { username: username });
       setFocus(false);
       setUsername("");
       setValid("true");
@@ -93,12 +82,14 @@ export default function QuizScreen({ navigation }) {
                     scoreTableUsers.indexOf(user) === 0 ? "#ffde69" : "#e6e6e6",
                 }}
               >
-                <Text style={{ fontSize: 24 }}>
+                <Text style={{ fontSize: 24 ,
+    fontFamily:"Optima"}}>
                   {scoreTableUsers.indexOf(user) + 1}
                   {"   "}
                   {user.username}
                 </Text>
-                <Text style={{ fontSize: 30 }}>{user.score}</Text>
+                <Text style={{ fontSize: 30,
+    fontFamily:"Optima" }}>{user.score}</Text>
               </View>
             ))}
           </ScrollView>
@@ -169,6 +160,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     textAlign: "center",
     color: "white",
+    fontFamily:"Optima"
   },
   bottomField: {
     backgroundColor: "white",
@@ -231,6 +223,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     padding: 10,
     fontWeight: "bold",
+    fontFamily:"Optima"
   },
   brightnessView: {
     backgroundColor: "black",

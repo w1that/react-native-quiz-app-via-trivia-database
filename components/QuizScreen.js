@@ -1,10 +1,21 @@
-import React from 'react'
-import { Text, View } from 'react-native'
+import React from "react";
+import {
+  SafeAreaView,
+  Text,
+  View,
+} from "react-native";
 
-export default function QuizScreen() {
-    return (
-        <View>
-            <Text>QUİZ SCREEN</Text>
-        </View>
-    )
+export default function QuizScreen({navigation, route}) {
+  
+
+
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <View>
+          <Text>
+              WELCOME QUIZ {route.params.username}
+          </Text>
+      </View>
+    </SafeAreaView>
+  );
 }
