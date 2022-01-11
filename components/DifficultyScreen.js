@@ -11,14 +11,13 @@ import LinearGradient from "react-native-linear-gradient";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 export default function QuizScreen({ navigation, route }) {
-  
   const [selected, setSelected] = useState(1);
 
   return (
     <SafeAreaView
       style={{ flex: 2, justifyContent: "center", alignItems: "center" }}
     >
-      <View style={{ flex: 6, justifyContent: "flex-end",paddingBottom:100  }}>
+      <View style={{ flex: 6, justifyContent: "flex-end", paddingBottom: 100 }}>
         <TouchableOpacity
           onPress={() => {
             setSelected(0);
@@ -96,12 +95,11 @@ export default function QuizScreen({ navigation, route }) {
             fontWeight: "bold",
             flexDirection: "row",
             alignItems: "center",
-            height:70
+            height: 70,
           }}
-        onPress={()=>navigation.navigate('Home')}
+          onPress={() => navigation.navigate("Home")}
         >
-          <Text style={{ fontWeight: "bold",
-    fontFamily:"Optima" }}>Back</Text>
+          <Text style={{ fontWeight: "bold", fontFamily: "Optima" }}>Back</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{
@@ -114,9 +112,11 @@ export default function QuizScreen({ navigation, route }) {
             fontWeight: "bold",
             flexDirection: "row",
             alignItems: "center",
-            height:70
+            height: 70,
           }}
-          onPress={()=>navigation.navigate('Quiz', {username: route.params.username})}
+          onPress={() =>
+            navigation.navigate("Quiz", { username: route.params.username })
+          }
         >
           <Icon size={40} color={"white"} name="double-arrow" />
         </TouchableOpacity>
@@ -132,7 +132,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 10,
     borderWidth: 5,
-    
   },
   inputButtonView: {
     display: "flex",
@@ -141,7 +140,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "80%",
     flex: 1,
-    marginTop:100
+    marginTop: 100,
   },
   goButton: {},
 });

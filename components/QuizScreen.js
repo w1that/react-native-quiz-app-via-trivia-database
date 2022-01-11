@@ -8,7 +8,7 @@ import {
 export default function QuizScreen({navigation, route}) {
   
 
-
+   
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View>

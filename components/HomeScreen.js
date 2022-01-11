@@ -1,3 +1,4 @@
+import { doc, setDoc } from "firebase/firestore/lite";
 import React, { useEffect, useState } from "react";
 import {
   Keyboard,
@@ -11,12 +12,14 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { db } from "../firebase";
 
 export default function QuizScreen({ navigation }) {
   const [scoreTableUsers, setScoreTableUsers] = useState([
-    { username: "rebellion", score: 2400 },
+    
     { username: "ahsen", score: 2100 },
     { username: "hasan", score: 1900 },
+    { username: "rebellion", score: 2400 },
     { username: "mithat", score: 1000 },
     { username: "hüseyin", score: 1400 },
   ]);
@@ -25,114 +28,134 @@ export default function QuizScreen({ navigation }) {
   const [valid, setValid] = useState(false);
   const [focus, setFocus] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-   
   useEffect(() => {
-    if(username.length<5){
-      setValid(false)
-    }else{
-      setValid(true)
+    if (username.length < 5) {
+      setValid(false);
+    } else {
+      setValid(true);
+    }
+    for (let i = 0; i < [...username].length; i++) {
+      if([...username][i]===' '){
+        setValid(false);
+        alert("Username can't have a space character.");
+        break;
+      }
     }
   }, [username]);
 
   const handleButtonPressed = () => {
+    setLoading(true);
     if (valid) {
-      navigation.push("Difficulty", { username: username });
-      setFocus(false);
-      setUsername("");
-      setValid("true");
+      setDoc(doc(db, "usernames", username), {
+        username: username,
+        score: 0,
+      })
+        .then(() => {
+          navigation.push("Difficulty", { username: username });
+          setFocus(false);
+          setUsername("");
+          setValid("true");
+          setLoading(false);
+        })
+        .catch((e) => {console.log(e)} );
     } else {
-      if(username.length<5){
+      if (username.length < 5) {
         alert("Username must has at least 5 characters.");
-      return
+        return;
       }
-      alert("Username is already taken.");
     }
   };
 
   return (
-    <SafeAreaView style={styles.mainContainer}>
-      <View style={styles.header}>
-        <Icon name="emoji-flags" size={70} color={"white"} />
-        <Text style={styles.headerText}>Trivia Quiz</Text>
-      </View>
-      <View style={styles.bottomField}>
-        <View style={{ height: 400, width: "100%" }}>
-          <Text style={styles.scoreTableMainContainer}>SCORE TABLE</Text>
-          <ScrollView
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={() => {
-                  setRefreshing(true);
-                  setTimeout(() => {
-                    setRefreshing(false);
-                  }, 1000);
-                }}
-              />
-            }
-            style={styles.scoreTableContainer}
-          >
-            {scoreTableUsers.map((user) => (
-              <View
+    <>
+      <SafeAreaView style={styles.mainContainer}>
+        <View style={styles.header}>
+          <Icon name="emoji-flags" size={70} color={"white"} />
+          <Text style={styles.headerText}>Trivia Quiz</Text>
+        </View>
+        <View style={styles.bottomField}>
+          <View style={{ height: 400, width: "100%" }}>
+            <Text style={styles.scoreTableMainContainer}>SCORE TABLE</Text>
+            <ScrollView
+              refreshControl={
+                <RefreshControl
+                  refreshing={refreshing}
+                  onRefresh={() => {
+                    setRefreshing(true);
+                    setTimeout(() => {
+                      setRefreshing(false);
+                    }, 1000);
+                  }}
+                />
+              }
+              style={styles.scoreTableContainer}
+            >
+              {scoreTableUsers.map((user) => (
+                <View
+                  style={{
+                    ...styles.scoreTableUser,
+                    borderWidth: scoreTableUsers.indexOf(user) === 0 ? 2 : 0,
+                    backgroundColor:
+                      scoreTableUsers.indexOf(user) === 0
+                        ? "#ffde69"
+                        : "#e6e6e6",
+                  }}
+                >
+                  <Text style={{ fontSize: 24, fontFamily: "Optima" }}>
+                    {scoreTableUsers.indexOf(user) + 1}
+                    {"   "}
+                    {user.username}
+                  </Text>
+                  <Text style={{ fontSize: 30, fontFamily: "Optima" }}>
+                    {user.score}
+                  </Text>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+          <View style={styles.inputButtonView}>
+            <TextInput
+              value={username}
+              onFocus={() => setFocus(true)}
+              onBlur={() => setFocus(false)}
+              style={styles.usernameInput}
+              placeholder="USERNAME"
+              onChangeText={setUsername}
+            ></TextInput>
+            <TouchableOpacity
+              onPress={handleButtonPressed}
+              style={styles.goButton}
+            >
+              <Icon size={40} color={"white"} name="double-arrow" />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {focus ? (
+          <>
+            <ScrollView style={styles.brightnessView}></ScrollView>
+            <View style={styles.usernameView}>
+              <Text
                 style={{
-                  ...styles.scoreTableUser,
-                  borderWidth: scoreTableUsers.indexOf(user) === 0 ? 2 : 0,
-                  backgroundColor:
-                    scoreTableUsers.indexOf(user) === 0 ? "#ffde69" : "#e6e6e6",
+                  color: "black",
+                  fontWeight: "bold",
+                  fontSize: 30,
+                  backgroundColor: valid ? "#87db76" : "#ff7e75",
+                  paddingVertical: 2,
                 }}
               >
-                <Text style={{ fontSize: 24 ,
-    fontFamily:"Optima"}}>
-                  {scoreTableUsers.indexOf(user) + 1}
-                  {"   "}
-                  {user.username}
-                </Text>
-                <Text style={{ fontSize: 30,
-    fontFamily:"Optima" }}>{user.score}</Text>
-              </View>
-            ))}
-          </ScrollView>
-        </View>
-        <View style={styles.inputButtonView}>
-          <TextInput
-            value={username}
-            onFocus={() => setFocus(true)}
-            onBlur={() => setFocus(false)}
-            style={styles.usernameInput}
-            placeholder="USERNAME"
-            onChangeText={setUsername}
-          ></TextInput>
-          <TouchableOpacity
-            onPress={handleButtonPressed}
-            style={styles.goButton}
-          >
-            <Icon size={40} color={"white"} name="double-arrow" />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {focus ? (
-        <>
-          <ScrollView style={styles.brightnessView}></ScrollView>
-          <View style={styles.usernameView}>
-            <Text
-              style={{
-                color: "black",
-                fontWeight: "bold",
-                fontSize: 30,
-                backgroundColor: valid ? "#87db76" : "#ff7e75",
-                paddingVertical: 2,
-              }}
-            >
-              {username}
-            </Text>
-          </View>
-        </>
-      ) : (
-        <></>
-      )}
-    </SafeAreaView>
+                {username}
+              </Text>
+            </View>
+          </>
+        ) : (
+          <></>
+        )}
+      </SafeAreaView>
+      {loading && <ScrollView style={styles.brightnessView}></ScrollView>}
+    </>
   );
 }
 
@@ -160,7 +183,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     textAlign: "center",
     color: "white",
-    fontFamily:"Optima"
+    fontFamily: "Optima",
   },
   bottomField: {
     backgroundColor: "white",
@@ -223,7 +246,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     padding: 10,
     fontWeight: "bold",
-    fontFamily:"Optima"
+    fontFamily: "Optima",
   },
   brightnessView: {
     backgroundColor: "black",

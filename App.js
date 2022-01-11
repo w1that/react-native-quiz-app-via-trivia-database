@@ -3,10 +3,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import DifficultyScreen from './components/DifficultyScreen'
 import HomeScreen from './components/HomeScreen'
 import QuizScreen from './components/QuizScreen'
+import db from './firebase'
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+
+  
 
   return (
     <NavigationContainer>
