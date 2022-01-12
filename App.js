@@ -12,7 +12,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown:false}} initialRouteName='Home'>
+      <Stack.Navigator screenOptions={{headerShown:false}} initialRouteName='Quiz'>
         <Stack.Screen name="Home" options={{ title: 'My home', headerShown:false }} component={HomeScreen} />
         <Stack.Screen name="Quiz" component={QuizScreen} />
         <Stack.Screen name="Difficulty" component={DifficultyScreen} />

@@ -28,7 +28,7 @@ export default function QuizScreen({ navigation, route }) {
     <SafeAreaView
       style={{ flex: 2, justifyContent: "center", alignItems: "center" }}
     >
-      <View style={{ flex: 6, justifyContent: "flex-end", paddingBottom: 100 }}>
+      <View style={{ flex: 6, justifyContent: "flex-end" }}>
         <TouchableOpacity
           onPress={() => {
             setSelected(0);
@@ -44,7 +44,6 @@ export default function QuizScreen({ navigation, route }) {
             style={{
               textAlign: "center",
               fontWeight: "bold",
-              fontFamily: "Optima",
             }}
           >
             EASY
@@ -65,7 +64,6 @@ export default function QuizScreen({ navigation, route }) {
             style={{
               textAlign: "center",
               fontWeight: "bold",
-              fontFamily: "Optima",
             }}
           >
             MEDIUM
@@ -86,7 +84,6 @@ export default function QuizScreen({ navigation, route }) {
             style={{
               textAlign: "center",
               fontWeight: "bold",
-              fontFamily: "Optima",
             }}
           >
             CHALLENGING
@@ -100,7 +97,9 @@ export default function QuizScreen({ navigation, route }) {
             backgroundColor: "white",
             paddingVertical: 16,
             paddingHorizontal: 40,
+            width:"44%",
             borderRadius: 10,
+            justifyContent:"center",
             borderWidth: 1,
             borderColor: "#3536bd",
             fontWeight: "bold",
@@ -110,7 +109,7 @@ export default function QuizScreen({ navigation, route }) {
           }}
           onPress={() => navigation.navigate("Home")}
         >
-          <Text style={{ fontWeight: "bold", fontFamily: "Optima" }}>Back</Text>
+          <Text style={{ fontWeight: "bold"}}>Back</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{
@@ -118,6 +117,8 @@ export default function QuizScreen({ navigation, route }) {
             paddingVertical: 16,
             paddingHorizontal: 40,
             borderRadius: 10,
+            width:"44%",
+            justifyContent:"center",
             borderWidth: 1,
             borderColor: "#3536bd",
             fontWeight: "bold",
@@ -152,6 +153,7 @@ const styles = StyleSheet.create({
     width: "80%",
     flex: 1,
     marginTop: 100,
+    marginBottom:20
   },
   goButton: {},
 });

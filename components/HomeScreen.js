@@ -1,6 +1,7 @@
 import { doc, setDoc } from "firebase/firestore/lite";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  Animated,
   Keyboard,
   RefreshControl,
   ScrollView,
@@ -15,8 +16,10 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { db } from "../firebase";
 
 export default function HomeScreen({ navigation }) {
+
+  const positionAnim = useRef(new Animated.Value(0)).current;
+
   const [scoreTableUsers, setScoreTableUsers] = useState([
-    
     { username: "rebellion", score: 2400 },
     { username: "ahsen", score: 2100 },
     { username: "hasan", score: 1900 },
@@ -24,12 +27,23 @@ export default function HomeScreen({ navigation }) {
     { username: "hüseyin", score: 1400 },
   ]);
 
-
   const [username, setUsername] = useState("");
   const [valid, setValid] = useState(false);
   const [focus, setFocus] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const topToCenter =()=>{
+    Animated.timing(positionAnim, {
+      toValue:400
+    }).start();
+  }
+
+  useEffect(() => {
+    if(loading===true){
+      topToCenter();
+    }
+  }, [loading])
 
   useEffect(() => {
     if (username.length < 5) {
@@ -38,7 +52,7 @@ export default function HomeScreen({ navigation }) {
       setValid(true);
     }
     for (let i = 0; i < [...username].length; i++) {
-      if([...username][i]===' '){
+      if ([...username][i] === " ") {
         setValid(false);
         alert("Username can't have a space character.");
         break;
@@ -60,11 +74,13 @@ export default function HomeScreen({ navigation }) {
           setValid("true");
           setLoading(false);
         })
-        .catch((e) => {console.log(e)} );
+        .catch((e) => {
+          console.log(e);
+        });
     } else {
       if (username.length < 5) {
         alert("Username must has at least 5 characters.");
-        setLoading(false)
+        setLoading(false);
         return;
       }
     }
@@ -96,7 +112,7 @@ export default function HomeScreen({ navigation }) {
             >
               {scoreTableUsers.map((user) => (
                 <View
-                key={user.username}
+                  key={user.username}
                   style={{
                     ...styles.scoreTableUser,
                     borderWidth: scoreTableUsers.indexOf(user) === 0 ? 2 : 0,
@@ -106,14 +122,12 @@ export default function HomeScreen({ navigation }) {
                         : "#e6e6e6",
                   }}
                 >
-                  <Text style={{ fontSize: 24, fontFamily: "Optima" }}>
+                  <Text style={{ fontSize: 24 }}>
                     {scoreTableUsers.indexOf(user) + 1}
                     {"   "}
                     {user.username}
                   </Text>
-                  <Text style={{ fontSize: 30, fontFamily: "Optima" }}>
-                    {user.score}
-                  </Text>
+                  <Text style={{ fontSize: 30 }}>{user.score}</Text>
                 </View>
               ))}
             </ScrollView>
@@ -131,33 +145,53 @@ export default function HomeScreen({ navigation }) {
               onPress={handleButtonPressed}
               style={styles.goButton}
             >
-              <Icon size={40} color={"white"} name="double-arrow" />
+              <Icon size={30} color={"white"} name="double-arrow" />
             </TouchableOpacity>
           </View>
         </View>
-
-        {focus ? (
-          <>
-            <ScrollView style={styles.brightnessView}></ScrollView>
-            <View style={styles.usernameView}>
-              <Text
-                style={{
-                  color: "black",
-                  fontWeight: "bold",
-                  fontSize: 30,
-                  backgroundColor: valid ? "#87db76" : "#ff7e75",
-                  paddingVertical: 2,
-                }}
-              >
-                {username}
-              </Text>
-            </View>
-          </>
-        ) : (
-          <></>
-        )}
       </SafeAreaView>
-      {loading && <ScrollView style={styles.brightnessView}></ScrollView>}
+      {loading && (
+        <>
+          <ScrollView style={styles.brightnessView}></ScrollView>
+          <View style={{width:"100%", zIndex:10,position: "absolute",height:"100%", alignItems:"center"}}>
+          <Animated.Text
+            style={{
+              backgroundColor: "black",
+              position: "absolute",
+              top: positionAnim,
+              textAlign: "center",
+              width: "90%",
+              padding: 10,
+              color: "white",
+              fontSize: 20,
+              borderRadius:20
+            }}
+          >
+            Wait a few seconds...
+          </Animated.Text>
+          </View>
+        </>
+      )}
+      {focus ? (
+        <>
+          <ScrollView style={styles.brightnessView}></ScrollView>
+          <View style={styles.usernameView}>
+            <Text
+              style={{
+                color: "black",
+                fontWeight: "bold",
+                fontSize: 30,
+                backgroundColor: valid ? "#87db76" : "#ff7e75",
+                paddingVertical: 2,
+              }}
+            >
+              {username}
+            </Text>
+          </View>
+        </>
+      ) : (
+        <></>
+      )}
     </>
   );
 }
@@ -174,7 +208,6 @@ const styles = StyleSheet.create({
     width: "96%",
     height: "20%",
     borderRadius: 20,
-    marginTop: 20,
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -186,15 +219,14 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     textAlign: "center",
     color: "white",
-    fontFamily: "Optima",
   },
   bottomField: {
     backgroundColor: "white",
     borderRadius: 20,
     flex: 1,
     width: "95%",
-    justifyContent: "space-between",
-    marginTop: 50,
+    justifyContent: "space-around",
+    marginTop: 10,
     alignItems: "center",
     paddingVertical: 10,
   },
@@ -209,6 +241,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
   },
   usernameInput: {
     borderColor: "black",
@@ -223,8 +256,8 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     width: "100%",
-    paddingHorizontal: 20,
   },
   scoreTableUser: {
     height: 70,
@@ -249,7 +282,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     padding: 10,
     fontWeight: "bold",
-    fontFamily: "Optima",
   },
   brightnessView: {
     backgroundColor: "black",
@@ -264,7 +296,10 @@ const styles = StyleSheet.create({
     width: "80%",
     height: 50,
     position: "absolute",
-    top: "50%",
+    top: "60%",
+    left: 40,
+    right: 0,
+    margin: "auto",
     opacity: 1,
     zIndex: 10,
     display: "flex",
