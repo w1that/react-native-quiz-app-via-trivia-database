@@ -12,6 +12,17 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 
 export default function QuizScreen({ navigation, route }) {
   const [selected, setSelected] = useState(1);
+  const [difficulty, setDifficulty] = useState('')
+
+  useEffect(() => {
+    if(selected===0){
+      setDifficulty('easy')
+    }if(selected===1){
+      setDifficulty('medium')
+    }if(selected===2){
+      setDifficulty('hard')
+    }
+  }, [selected])
 
   return (
     <SafeAreaView
@@ -115,7 +126,7 @@ export default function QuizScreen({ navigation, route }) {
             height: 70,
           }}
           onPress={() =>
-            navigation.navigate("Quiz", { username: route.params.username })
+            navigation.navigate("Quiz", { username: route.params.username, difficulty:difficulty })
           }
         >
           <Icon size={40} color={"white"} name="double-arrow" />

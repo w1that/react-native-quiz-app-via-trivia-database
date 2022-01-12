@@ -14,15 +14,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { db } from "../firebase";
 
-export default function QuizScreen({ navigation }) {
+export default function HomeScreen({ navigation }) {
   const [scoreTableUsers, setScoreTableUsers] = useState([
     
+    { username: "rebellion", score: 2400 },
     { username: "ahsen", score: 2100 },
     { username: "hasan", score: 1900 },
-    { username: "rebellion", score: 2400 },
     { username: "mithat", score: 1000 },
     { username: "hüseyin", score: 1400 },
   ]);
+
 
   const [username, setUsername] = useState("");
   const [valid, setValid] = useState(false);
@@ -63,6 +64,7 @@ export default function QuizScreen({ navigation }) {
     } else {
       if (username.length < 5) {
         alert("Username must has at least 5 characters.");
+        setLoading(false)
         return;
       }
     }
@@ -94,6 +96,7 @@ export default function QuizScreen({ navigation }) {
             >
               {scoreTableUsers.map((user) => (
                 <View
+                key={user.username}
                   style={{
                     ...styles.scoreTableUser,
                     borderWidth: scoreTableUsers.indexOf(user) === 0 ? 2 : 0,
