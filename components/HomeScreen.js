@@ -1,4 +1,6 @@
 import { doc, setDoc } from "firebase/firestore/lite";
+import 'react-native-get-random-values'
+import { v4 as uuid } from 'uuid'
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
@@ -14,6 +16,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { db } from "../firebase";
+import { nanoid } from "nanoid";
 
 export default function HomeScreen({ navigation }) {
 
@@ -111,8 +114,7 @@ export default function HomeScreen({ navigation }) {
               style={styles.scoreTableContainer}
             >
               {scoreTableUsers.map((user) => (
-                <View
-                  key={user.username}
+                <View key={nanoid()}
                   style={{
                     ...styles.scoreTableUser,
                     borderWidth: scoreTableUsers.indexOf(user) === 0 ? 2 : 0,
