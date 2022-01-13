@@ -5,33 +5,36 @@ import { db } from "../firebase";
 
 export default function ResultScreen({ navigation, route }) {
   const [counter, setCounter] = useState(5000);
-  const [docSnap, setDocSnap] = useState({})
+  const [docSnap, setDocSnap] = useState({});
 
   useEffect(() => {
-      setTimeout(() => {
-          navigation.navigate('Home');
-      }, counter);
-  }, [])
+    setTimeout(() => {
+      navigation.push("Home");
+    }, counter);
+  }, []);
 
   useEffect(() => {
-        setInterval(() => {
-            setCounter(prev=>prev-1000)   
-          }, 1000);
-  }, [])
+    setInterval(() => {
+      setCounter((prev) => prev - 1000);
+    }, 1000);
+  }, []);
 
   useEffect(() => {
-    getDoc(doc(db, "usernames", route.params.username)).then((res)=>{
-        if(res.data().score<route.params.score){
-            setDoc(doc(db, "usernames", route.params.username), {
-            username: route.params.username,
-            score: route.params.score,
-          }).then(res=>console.log(res))
-        }else{
-            console.log("aynı ya da daha büyük")
-        }
-    })
-  }, [])
-
+    getDoc(doc(db, "usernames", route.params.username)).then((res) => {
+      // if(res.data().score<route.params.score){
+      //     setDoc(doc(db, "usernames", route.params.username), {
+      //     username: route.params.username,
+      //     score: res.data().score+route.params.score,
+      //   }).then(res=>console.log(res))
+      // }else{
+      //     console.log("aynı ya da daha büyük")
+      // }
+      setDoc(doc(db, "usernames", route.params.username), {
+        username: route.params.username,
+        score: res.data().score + route.params.score,
+      });
+    });
+  }, []);
 
   return (
     <View
@@ -85,8 +88,8 @@ export default function ResultScreen({ navigation, route }) {
             alignItems: "center",
             marginTop: 50,
             borderRadius: 50,
-            borderColor:"#b5b5b5",
-            borderWidth:1,
+            borderColor: "#b5b5b5",
+            borderWidth: 1,
             shadowColor: "black",
             elevation: 4,
             shadowOffset: {
@@ -94,7 +97,9 @@ export default function ResultScreen({ navigation, route }) {
               height: 2,
             },
           }}
-        ><Text style={{fontSize:20}}>{counter/1000}</Text></View>
+        >
+          <Text style={{ fontSize: 20 }}>{counter / 1000}</Text>
+        </View>
       </View>
     </View>
   );

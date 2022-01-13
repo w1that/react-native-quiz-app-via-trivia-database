@@ -10,17 +10,19 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 
 export default function QuizScreen({ navigation, route }) {
   const [selected, setSelected] = useState(1);
-  const [difficulty, setDifficulty] = useState('')
+  const [difficulty, setDifficulty] = useState("");
 
   useEffect(() => {
-    if(selected===0){
-      setDifficulty('easy')
-    }if(selected===1){
-      setDifficulty('medium')
-    }if(selected===2){
-      setDifficulty('hard')
+    if (selected === 0) {
+      setDifficulty("easy");
     }
-  }, [selected])
+    if (selected === 1) {
+      setDifficulty("medium");
+    }
+    if (selected === 2) {
+      setDifficulty("hard");
+    }
+  }, [selected]);
 
   return (
     <SafeAreaView
@@ -95,9 +97,9 @@ export default function QuizScreen({ navigation, route }) {
             backgroundColor: "white",
             paddingVertical: 16,
             paddingHorizontal: 40,
-            width:"44%",
+            width: "44%",
             borderRadius: 10,
-            justifyContent:"center",
+            justifyContent: "center",
             borderWidth: 1,
             borderColor: "#3536bd",
             fontWeight: "bold",
@@ -105,7 +107,7 @@ export default function QuizScreen({ navigation, route }) {
             alignItems: "center",
             height: 70,
             shadowColor: "black",
-            elevation:3,
+            elevation: 3,
             shadowOffset: {
               width: 2,
               height: 4,
@@ -113,7 +115,7 @@ export default function QuizScreen({ navigation, route }) {
           }}
           onPress={() => navigation.navigate("Home")}
         >
-          <Text style={{ fontWeight: "bold"}}>Back</Text>
+          <Text style={{ fontWeight: "bold" }}>Back</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={{
@@ -121,8 +123,8 @@ export default function QuizScreen({ navigation, route }) {
             paddingVertical: 16,
             paddingHorizontal: 40,
             borderRadius: 10,
-            width:"44%",
-            justifyContent:"center",
+            width: "44%",
+            justifyContent: "center",
             borderWidth: 1,
             borderColor: "#3536bd",
             fontWeight: "bold",
@@ -130,14 +132,17 @@ export default function QuizScreen({ navigation, route }) {
             alignItems: "center",
             height: 70,
             shadowColor: "black",
-            elevation:3,
+            elevation: 3,
             shadowOffset: {
               width: 2,
               height: 4,
             },
           }}
           onPress={() =>
-            navigation.navigate("Quiz", { username: route.params.username, difficulty:difficulty })
+            navigation.navigate("Quiz", {
+              username: route.params.username,
+              difficulty: difficulty,
+            })
           }
         >
           <Icon size={40} color={"white"} name="double-arrow" />
@@ -155,11 +160,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 5,
     shadowColor: "black",
-            elevation:3,
-            shadowOffset: {
-              width: 2,
-              height: 4,
-            },
+    elevation: 3,
+    shadowOffset: {
+      width: 2,
+      height: 4,
+    },
   },
   inputButtonView: {
     display: "flex",
@@ -169,8 +174,7 @@ const styles = StyleSheet.create({
     width: "80%",
     flex: 1,
     marginTop: 100,
-    marginBottom:20,
-    
+    marginBottom: 20,
   },
   goButton: {},
 });

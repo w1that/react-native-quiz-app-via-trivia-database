@@ -27,9 +27,9 @@ export default function QuizScreen({ navigation, route }) {
 
   useEffect(() => {
     if (markedSize === 10) {
-      navigation.navigate("Result",{
-        score:score,
-        username:username
+      navigation.navigate("Result", {
+        score: score,
+        username: username,
       });
     }
   }, [markedSize]);
@@ -51,8 +51,7 @@ export default function QuizScreen({ navigation, route }) {
           setQuestions(response.data.results);
           setLoading(false);
           // setLoading(true)
-        })
-        .catch((err) => console.log(err));
+        });
     }
   }, []);
 
@@ -99,7 +98,6 @@ export default function QuizScreen({ navigation, route }) {
         horizontal
         data={questions}
         showsHorizontalScrollIndicator={false}
-        
         bounces
         renderItem={(question) => {
           return (
@@ -114,6 +112,7 @@ export default function QuizScreen({ navigation, route }) {
           );
         }}
         pagingEnabled
+        keyExtractor={(item, index) => index.toString()}
       ></FlatList>
       <TouchableOpacity
         onLongPress={() => navigation.navigate("Home")}

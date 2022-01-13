@@ -1,10 +1,17 @@
-import { doc, getDoc, setDoc } from "firebase/firestore/lite";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  setDoc,
+} from "firebase/firestore/lite";
 import "react-native-get-random-values";
-import { v4 as uuid } from "uuid";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
-  Keyboard,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -20,32 +27,68 @@ import { nanoid } from "nanoid";
 
 export default function HomeScreen({ navigation }) {
   const positionAnim = useRef(new Animated.Value(0)).current;
+  const loadingTextAnim = useRef(new Animated.Value(0)).current;
 
-  const [scoreTableUsers, setScoreTableUsers] = useState([
-    { username: "rebellion", score: 2400 },
-    { username: "ahsen", score: 2100 },
-    { username: "hasan", score: 1900 },
-    { username: "mithat", score: 1000 },
-    { username: "hüseyin", score: 1400 },
-  ]);
+  // const [scoreTableUsers, setScoreTableUsers] = useState([
+  //   { username: "rebellion", score: 2400 },
+  //   { username: "ahsen", score: 2100 },
+  //   { username: "hasan", score: 1900 },
+  //   { username: "mithat", score: 1000 },
+  //   { username: "hüseyin", score: 1400 },
+  // ]);
 
+  const [scoreTableUsers, setScoreTableUsers] = useState([]);
   const [username, setUsername] = useState("");
   const [valid, setValid] = useState(false);
   const [focus, setFocus] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [tableLoading, setTableLoading] = useState(false);
+
+  useEffect(() => {
+  
+    setTableLoading(true);
+    getFiveDescUser();
+  }, []);
+
+  const getFiveDescUser = () => {
+    const usersRef = collection(db, "usernames");
+    const q = query(usersRef, orderBy("score", "desc"), limit(5));
+    getDocs(q).then((res) => {
+      let querySnapshot = res;
+      querySnapshot.forEach((doc) => {
+        // setScoreTableUsers(doc.data());
+        setScoreTableUsers((prev) => [...prev, doc.data()]);
+        setTableLoading(false);
+      });
+    });
+  };
 
   const topToCenter = () => {
     Animated.timing(positionAnim, {
       toValue: 400,
+      useNativeDriver: false
     }).start();
+  };
+
+  const loadingTextBottom = () => {
+    Animated.loop(
+      Animated.timing(loadingTextAnim, {
+        toValue: 400,
+        duration: 1000,
+        useNativeDriver: false
+      })
+    ).start();
   };
 
   useEffect(() => {
     if (loading === true) {
       topToCenter();
     }
-  }, [loading]);
+    if (tableLoading === true) {
+      loadingTextBottom();
+    }
+  }, [loading, loadingTextAnim]);
 
   useEffect(() => {
     if (username.length < 5) {
@@ -62,45 +105,49 @@ export default function HomeScreen({ navigation }) {
     }
   }, [username]);
 
+  useEffect(() => {
+    console.log("refreshing")
+    if (refreshing) {
+      setTableLoading(true);
+      setScoreTableUsers([]);
+      getFiveDescUser();
+    }
+    setRefreshing(false);
+  }, [refreshing]);
+
+  // useEffect(() => {
+  //   setRefreshing(true);
+  // }, [])
+
   const handleButtonPressed = () => {
     setLoading(true);
     if (valid) {
       const ref = doc(db, "usernames", username);
-      getDoc(ref).then(res=>{
-        if(res.exists()){
+      getDoc(ref).then((res) => {
+        if (res.exists()) {
           setDoc(doc(db, "usernames", username), {
             username: username,
             score: res.data().score,
-          })
-            .then(() => {
-              navigation.push("Difficulty", { username: username });
-              setFocus(false);
-              setUsername("");
-              setValid("true");
-              setLoading(false);
-            })
-            .catch((e) => {
-              console.log(e);
-            });
-        }else{
+          }).then(() => {
+            navigation.push("Difficulty", { username: username });
+            setFocus(false);
+            setUsername("");
+            setValid("true");
+            setLoading(false);
+          });
+        } else {
           setDoc(doc(db, "usernames", username), {
             username: username,
             score: 0,
-          })
-            .then(() => {
-              navigation.push("Difficulty", { username: username });
-              setFocus(false);
-              setUsername("");
-              setValid("true");
-              setLoading(false);
-            })
-            .catch((e) => {
-              console.log(e);
-            });
+          }).then(() => {
+            navigation.push("Difficulty", { username: username });
+            setFocus(false);
+            setUsername("");
+            setValid("true");
+            setLoading(false);
+          });
         }
-      })
-
-      
+      });
     } else {
       if (username.length < 5) {
         alert("Username must has at least 5 characters.");
@@ -118,7 +165,7 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.headerText}>Trivia Quiz</Text>
         </View>
         <View style={styles.bottomField}>
-          <View style={{ height: 340, width: "100%"}}>
+          <View style={{ height: 340, width: "100%" }}>
             <Text style={styles.scoreTableMainContainer}>SCORE TABLE</Text>
             <ScrollView
               refreshControl={
@@ -134,26 +181,42 @@ export default function HomeScreen({ navigation }) {
               }
               style={styles.scoreTableContainer}
             >
-              {scoreTableUsers.map((user) => (
-                <View
-                  key={nanoid()}
-                  style={{
-                    ...styles.scoreTableUser,
-                    borderWidth: scoreTableUsers.indexOf(user) === 0 ? 2 : 0,
-                    backgroundColor:
-                      scoreTableUsers.indexOf(user) === 0
-                        ? "#ffde69"
-                        : "#e6e6e6",
-                  }}
-                >
-                  <Text style={{ fontSize: 20 }}>
-                    {scoreTableUsers.indexOf(user) + 1}
-                    {"   "}
-                    {user.username}
-                  </Text>
-                  <Text style={{ fontSize: 20 }}>{user.score}</Text>
+              {tableLoading ? (
+                <View style={{ height: 400, alignItems: "center" }}>
+                  <Animated.Text
+                    style={{
+                      textAlign: "center",
+                      position: "absolute",
+                      top: loadingTextAnim,
+                      fontWeight: "bold",
+                      fontSize: 20,
+                    }}
+                  >
+                    Loading
+                  </Animated.Text>
                 </View>
-              ))}
+              ) : (
+                scoreTableUsers.map((user) => (
+                  <View
+                    key={nanoid()}
+                    style={{
+                      ...styles.scoreTableUser,
+                      borderWidth: scoreTableUsers.indexOf(user) === 0 ? 2 : 0,
+                      backgroundColor:
+                        scoreTableUsers.indexOf(user) === 0
+                          ? "#ffde69"
+                          : "#e6e6e6",
+                    }}
+                  >
+                    <Text style={{ fontSize: 20 }}>
+                      {scoreTableUsers.indexOf(user) + 1}
+                      {"   "}
+                      {user.username}
+                    </Text>
+                    <Text style={{ fontSize: 20 }}>{user.score}</Text>
+                  </View>
+                ))
+              )}
             </ScrollView>
           </View>
           <View style={styles.inputButtonView}>
@@ -245,19 +308,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     shadowColor: "black",
-            elevation:15,
-            shadowOffset: {
-              width: 4,
-              height: 4,
-            },
+    elevation: 15,
+    shadowOffset: {
+      width: 4,
+      height: 4,
+    },
     paddingHorizontal: 20,
-    marginTop:20
+    marginTop: 20,
   },
   headerText: {
     fontSize: 40,
     textAlign: "center",
     color: "white",
-    
   },
   bottomField: {
     backgroundColor: "white",
@@ -268,7 +330,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     alignItems: "center",
     paddingVertical: 10,
-    
   },
   goButton: {
     backgroundColor: "#8586ff",
@@ -282,7 +343,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    
   },
   usernameInput: {
     borderColor: "black",
@@ -292,7 +352,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     textAlign: "center",
     borderRadius: 10,
-    
   },
   inputButtonView: {
     display: "flex",
@@ -300,7 +359,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    
   },
   scoreTableUser: {
     height: 64,
@@ -313,12 +371,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderColor: "#edb900",
     shadowColor: "black",
-            elevation:3,
-            shadowOffset: {
-              width: 2,
-              height: 4,
-            },
-    alignSelf:"center"
+    elevation: 3,
+    shadowOffset: {
+      width: 2,
+      height: 4,
+    },
+    alignSelf: "center",
   },
   scoreTableContainer: {
     backgroundColor: "#f2f2f2",
@@ -327,18 +385,17 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 20,
     shadowColor: "black",
-            elevation:3,
-            shadowOffset: {
-              width: 2,
-              height: 4,
-            },
+    elevation: 3,
+    shadowOffset: {
+      width: 2,
+      height: 4,
+    },
   },
   scoreTableMainContainer: {
     fontSize: 30,
     textAlign: "center",
     padding: 10,
     fontWeight: "bold",
-    
   },
   brightnessView: {
     backgroundColor: "black",
@@ -365,10 +422,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     shadowColor: "white",
-            elevation:3,
-            shadowOffset: {
-              width: 2,
-              height: 4,
-            },
+    elevation: 3,
+    shadowOffset: {
+      width: 2,
+      height: 4,
+    },
   },
 });

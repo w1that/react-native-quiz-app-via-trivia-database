@@ -60,8 +60,8 @@ export default function Question({
         alignItems: "center",
       }}
     >
-      <View style={{ width: "80%",  }}>
-        <Text style={{ fontSize: 24, paddingBottom: 30,  }}>
+      <View style={{ width: "80%" }}>
+        <Text style={{ fontSize: 24, paddingBottom: 30 }}>
           {question.item.question}
         </Text>
       </View>
@@ -88,7 +88,7 @@ export default function Question({
       {markedSize < 9 && (
         <TouchableOpacity
           style={{
-            borderColor: marked?'#c9c9c9':"#29d935",
+            borderColor: marked ? "#c9c9c9" : "#29d935",
             borderWidth: 2,
             padding: 10,
             marginTop: 5,
@@ -102,7 +102,7 @@ export default function Question({
           }}
           disabled={marked}
           onPress={() => {
-            if(selectedAnswer.length >0){
+            if (selectedAnswer.length > 0) {
               setUserAnswers((prev) => [
                 ...prev,
                 { id: question.index, selectedAnswer: selectedAnswer },
@@ -112,8 +112,18 @@ export default function Question({
             }
           }}
         >
-          <Icon color={marked?'#e6e6e6':"#18b522"} size={30} name="check"></Icon>
-          <Text style={{ fontSize: 20, color: marked?'#e6e6e6':"#18b522", paddingLeft: 10 }}>
+          <Icon
+            color={marked ? "#e6e6e6" : "#18b522"}
+            size={30}
+            name="check"
+          ></Icon>
+          <Text
+            style={{
+              fontSize: 20,
+              color: marked ? "#e6e6e6" : "#18b522",
+              paddingLeft: 10,
+            }}
+          >
             Select
           </Text>
         </TouchableOpacity>
