@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Animated,
   SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 export default function QuizScreen({ navigation, route }) {
@@ -106,6 +104,12 @@ export default function QuizScreen({ navigation, route }) {
             flexDirection: "row",
             alignItems: "center",
             height: 70,
+            shadowColor: "black",
+            elevation:3,
+            shadowOffset: {
+              width: 2,
+              height: 4,
+            },
           }}
           onPress={() => navigation.navigate("Home")}
         >
@@ -125,6 +129,12 @@ export default function QuizScreen({ navigation, route }) {
             flexDirection: "row",
             alignItems: "center",
             height: 70,
+            shadowColor: "black",
+            elevation:3,
+            shadowOffset: {
+              width: 2,
+              height: 4,
+            },
           }}
           onPress={() =>
             navigation.navigate("Quiz", { username: route.params.username, difficulty:difficulty })
@@ -144,6 +154,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 10,
     borderWidth: 5,
+    shadowColor: "black",
+            elevation:3,
+            shadowOffset: {
+              width: 2,
+              height: 4,
+            },
   },
   inputButtonView: {
     display: "flex",
@@ -153,7 +169,8 @@ const styles = StyleSheet.create({
     width: "80%",
     flex: 1,
     marginTop: 100,
-    marginBottom:20
+    marginBottom:20,
+    
   },
   goButton: {},
 });
