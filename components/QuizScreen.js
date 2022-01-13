@@ -15,14 +15,29 @@ import {
 } from "react-native";
 import Question from './Question'
 import { nanoid } from "nanoid";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default function QuizScreen({ navigation, route }) {
   const [questions, setQuestions] = useState([{ question: "" }]);
   const [loading, setLoading] = useState(true);
+  const [infoShown, setInfoShown] = useState(true);
 
   const [userAnswers, setUserAnswers] = useState([])
 
   const [score, setScore] = useState(0)
+  const [markedSize, setMarkedSize] = useState(0)
+
+  useEffect(() => {
+    if(markedSize===10){
+      navigation.navigate('Home');
+    }
+  }, [markedSize])
+
+  useEffect(() => {
+    setTimeout(() => {
+      setInfoShown(false);
+    }, 3000);
+  }, [])
 
 
   useEffect(() => {
@@ -41,9 +56,7 @@ export default function QuizScreen({ navigation, route }) {
     }
   }, []);
 
-  useEffect(() => {
-    console.log(score,"score--------------------------------")
-  }, [score])
+  
 
   
 
@@ -92,18 +105,24 @@ export default function QuizScreen({ navigation, route }) {
       <FlatList
         horizontal
         data={questions}
-        
         showsHorizontalScrollIndicator={false}
+        onEndReached={()=>alert("end")}
         bounces
         renderItem={(question) => {
           return (
-            <Question  setUserAnswers={setUserAnswers} userAnswers={userAnswers} question={question} setScore={setScore}/>
+            <Question markedSize={markedSize} setMarkedSize={setMarkedSize} setUserAnswers={setUserAnswers} userAnswers={userAnswers} question={question} setScore={setScore}/>
           );
         }}
         pagingEnabled
       >
         
       </FlatList>
+      <TouchableOpacity onLongPress={()=>navigation.navigate('Home')} style={{position:"absolute", top:50, right:20}}>
+        <Icon size={40} color={'red'} name="exit-to-app"></Icon>
+      </TouchableOpacity>
+      {infoShown&&<View style={{position:"absolute", top:70, right:100}}>
+        <Text>Long press to quit</Text>
+      </View>}
       
     </SafeAreaView>
   );
