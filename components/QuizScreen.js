@@ -22,10 +22,9 @@ export default function QuizScreen({ navigation, route }) {
 
   const [userAnswers, setUserAnswers] = useState([])
 
-  console.log(userAnswers)
+  const [score, setScore] = useState(0)
 
 
- 
   useEffect(() => {
     if(questions.length===1){
       axios
@@ -41,6 +40,10 @@ export default function QuizScreen({ navigation, route }) {
       .catch((err) => console.log(err));
     }
   }, []);
+
+  useEffect(() => {
+    console.log(score,"score--------------------------------")
+  }, [score])
 
   
 
@@ -89,14 +92,19 @@ export default function QuizScreen({ navigation, route }) {
       <FlatList
         horizontal
         data={questions}
+        
         showsHorizontalScrollIndicator={false}
+        bounces
         renderItem={(question) => {
           return (
-            <Question  setUserAnswers={setUserAnswers} question={question}/>
+            <Question  setUserAnswers={setUserAnswers} userAnswers={userAnswers} question={question} setScore={setScore}/>
           );
         }}
         pagingEnabled
-      ></FlatList>
+      >
+        
+      </FlatList>
+      
     </SafeAreaView>
   );
 

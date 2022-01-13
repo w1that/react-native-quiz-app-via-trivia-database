@@ -5,17 +5,18 @@ import { Button, Dimensions, Text, TouchableOpacity, View } from "react-native";
 import Answer from "./Answer";
 import { nanoid } from 'nanoid';
 
-export default function Question({ question, setUserAnswers }) {
+export default function Question({ question, setUserAnswers, userAnswers, setScore }) {
   const incorrectAnswers = question.item.incorrect_answers;
-  //   const correctAnswer = question.item.correct_answer;
-  const correctAnswer = "correct one";
-
+  // const correctAnswer = question.item.correct_answer;
+  const correctAnswer ='correct one'
   const [answers, setanswers] = useState([])
   const [selectedAnswer, setSelectedAnswer] = useState('')
+  const [marked, setMarked] = useState(false)
 
-  useEffect(() => {
-      setUserAnswers(prev=>[...prev, {id:question.index, selectedAnswer:selectedAnswer}])
-  }, [selectedAnswer])
+  // useEffect(() => {
+    // setUserAnswers(prev=>[...prev, {id:question.index, selectedAnswer:selectedAnswer}])
+  // }, [selectedAnswer])
+
 
 
   useEffect(() => {
@@ -40,14 +41,13 @@ export default function Question({ question, setUserAnswers }) {
     }
   }, []);
 
-  // const [incorrectAnswers, setincorrectAnswers] = useState(question.item.incorrect_answers)
-  // const [correctAnswer, setCorrectAnswer] = useState(question.item.correct_answer)
+  useEffect(() => {
+    if(marked && selectedAnswer===correctAnswer){
+      setScore(prev=>prev+100);
+    }
+  }, [marked, selectedAnswer])
 
-  //   setUserAnswers(prev=>[...prev,{id:question.index, answer:correctAnswer}])
 
-  const handleAnswer = (answer) => {
-    setUserAnswers((prev) => [...prev, { id: question.index, answer: answer }]);
-  };
 
   return (
     <View
@@ -64,6 +64,10 @@ export default function Question({ question, setUserAnswers }) {
           <Answer key={nanoid()} setSelectedAnswer={setSelectedAnswer} answer={answer} />
       
       ))}
+      <Button disabled={marked} onPress={()=>{
+        setUserAnswers(prev=>[...prev, {id:question.index, selectedAnswer:selectedAnswer}])
+        setMarked(true)
+      }} title='İşaretle'></Button>
     </View>
   );
 }
