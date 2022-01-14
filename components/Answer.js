@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
 export default function Answer({
   answer,

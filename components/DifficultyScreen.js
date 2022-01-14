@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -23,6 +23,72 @@ export default function QuizScreen({ navigation, route }) {
       setDifficulty("hard");
     }
   }, [selected]);
+
+  const styles = StyleSheet.create({
+    button: {
+      paddingHorizontal: 40,
+      paddingVertical: 20,
+      marginBottom: 20,
+      borderRadius: 10,
+      borderWidth: 5,
+      shadowColor: "black",
+      elevation: 3,
+      shadowOffset: {
+        width: 2,
+        height: 4,
+      },
+    },
+    inputButtonView: {
+      display: "flex",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "80%",
+      flex: 1,
+      marginTop: 100,
+      marginBottom: 20,
+    },
+    goButton: {
+      backgroundColor: "#8586ff",
+      paddingVertical: 16,
+      paddingHorizontal: 40,
+      borderRadius: 10,
+      width: "44%",
+      justifyContent: "center",
+      borderWidth: 1,
+      borderColor: "#3536bd",
+      fontWeight: "bold",
+      flexDirection: "row",
+      alignItems: "center",
+      height: 70,
+      shadowColor: "black",
+      elevation: 3,
+      shadowOffset: {
+        width: 2,
+        height: 4,
+      },
+    },
+    backButton: {
+      backgroundColor: "white",
+      paddingVertical: 16,
+      paddingHorizontal: 40,
+      width: "44%",
+      borderRadius: 10,
+      justifyContent: "center",
+      borderWidth: 1,
+      borderColor: "#3536bd",
+      fontWeight: "bold",
+      flexDirection: "row",
+      alignItems: "center",
+      height: 70,
+      shadowColor: "black",
+      elevation: 3,
+      shadowOffset: {
+        width: 2,
+        height: 4,
+      },
+    },
+  });
 
   return (
     <SafeAreaView
@@ -93,51 +159,13 @@ export default function QuizScreen({ navigation, route }) {
 
       <View style={styles.inputButtonView}>
         <TouchableOpacity
-          style={{
-            backgroundColor: "white",
-            paddingVertical: 16,
-            paddingHorizontal: 40,
-            width: "44%",
-            borderRadius: 10,
-            justifyContent: "center",
-            borderWidth: 1,
-            borderColor: "#3536bd",
-            fontWeight: "bold",
-            flexDirection: "row",
-            alignItems: "center",
-            height: 70,
-            shadowColor: "black",
-            elevation: 3,
-            shadowOffset: {
-              width: 2,
-              height: 4,
-            },
-          }}
+          style={styles.backButton}
           onPress={() => navigation.navigate("Home")}
         >
           <Text style={{ fontWeight: "bold" }}>Back</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={{
-            backgroundColor: "#8586ff",
-            paddingVertical: 16,
-            paddingHorizontal: 40,
-            borderRadius: 10,
-            width: "44%",
-            justifyContent: "center",
-            borderWidth: 1,
-            borderColor: "#3536bd",
-            fontWeight: "bold",
-            flexDirection: "row",
-            alignItems: "center",
-            height: 70,
-            shadowColor: "black",
-            elevation: 3,
-            shadowOffset: {
-              width: 2,
-              height: 4,
-            },
-          }}
+          style={styles.goButton}
           onPress={() =>
             navigation.navigate("Quiz", {
               username: route.params.username,
@@ -151,30 +179,3 @@ export default function QuizScreen({ navigation, route }) {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    paddingHorizontal: 40,
-    paddingVertical: 20,
-    marginBottom: 20,
-    borderRadius: 10,
-    borderWidth: 5,
-    shadowColor: "black",
-    elevation: 3,
-    shadowOffset: {
-      width: 2,
-      height: 4,
-    },
-  },
-  inputButtonView: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "80%",
-    flex: 1,
-    marginTop: 100,
-    marginBottom: 20,
-  },
-  goButton: {},
-});

@@ -5,7 +5,6 @@ import {
   SafeAreaView,
   Text,
   View,
-  ScrollView,
   TouchableOpacity,
   Animated,
   FlatList,
@@ -45,12 +44,11 @@ export default function QuizScreen({ navigation, route }) {
       axios
         .get(
           `https://opentdb.com/api.php?amount=10&difficulty=${route.params.difficulty}&type=multiple`
-          // "https://opentdb.com/api.php?amount=10&type=multiple"
+          // "https://opentdb.com/api.php?amount=10&type=multiple"   //url that has current difficulty
         )
         .then((response) => {
           setQuestions(response.data.results);
           setLoading(false);
-          // setLoading(true)
         });
     }
   }, []);
@@ -67,17 +65,42 @@ export default function QuizScreen({ navigation, route }) {
     ).start();
   }, []);
 
+  const styles = StyleSheet.create({
+    container: {
+      width: Dimensions.get("window").width,
+      height: Dimensions.get("window").height,
+      justifyContent: "space-around",
+      backgroundColor: "white",
+      alignItems: "center",
+    },
+    questionContainer: {
+      width: Dimensions.get("window").width - 50,
+      borderRadius: 10,
+      padding: 10,
+    },
+    questionsText: { marginRight: 10, fontSize: 24 },
+    answersContainer: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      width: "100%",
+    },
+    answerButton: { borderWidth: 2, borderRadius: 10 },
+    answerText: { marginRight: 10, textAlign: "center", fontWeight: "bold" },
+    loadingContainer: {
+      backgroundColor: "#e6e6e6",
+      height: "100%",
+      width: "100%",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+  });
+
   if (loading) {
+    //early return, checks if data is still in fetching progress.
     return (
-      <View
-        style={{
-          backgroundColor: "#e6e6e6",
-          height: "100%",
-          width: "100%",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <View style={styles.loadingContainer}>
         <Animated.Text
           style={{
             color: "gray",
@@ -128,28 +151,3 @@ export default function QuizScreen({ navigation, route }) {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
-    justifyContent: "space-around",
-    backgroundColor: "white",
-    alignItems: "center",
-  },
-  questionContainer: {
-    width: Dimensions.get("window").width - 50,
-    borderRadius: 10,
-    padding: 10,
-  },
-  questionsText: { marginRight: 10, fontSize: 24 },
-  answersContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-  },
-  answerButton: { borderWidth: 2, borderRadius: 10 },
-  answerText: { marginRight: 10, textAlign: "center", fontWeight: "bold" },
-});
